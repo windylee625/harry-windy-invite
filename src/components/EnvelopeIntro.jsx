@@ -19,7 +19,7 @@ const C = {
   beigeDark: '#C4B59B',
 };
 
-export default function EnvelopeIntro({ onOpen }) {
+export default function EnvelopeIntro({ onOpen, onStart }) {
   const [opening, setOpening] = useState(false);
 
   // 開場時鎖住頁面捲動
@@ -38,7 +38,11 @@ export default function EnvelopeIntro({ onOpen }) {
     return () => clearTimeout(id);
   }, [opening, onOpen]);
 
-  const open = () => setOpening(true);
+  const open = () => {
+    if (opening) return;
+    onStart?.(); // 在點擊當下同步啟動音樂（行動裝置的自動播放限制）
+    setOpening(true);
+  };
   const state = opening ? 'open' : 'closed';
 
   return (

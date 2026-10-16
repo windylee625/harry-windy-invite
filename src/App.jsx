@@ -4,6 +4,7 @@ import LogoHeader from './components/LogoHeader.jsx';
 import Countdown from './components/Countdown.jsx';
 import EnvelopeIntro from './components/EnvelopeIntro.jsx';
 import PhotoSlideshow from './components/PhotoSlideshow.jsx';
+import { MusicToggle, useBackgroundMusic } from './components/MusicPlayer.jsx';
 import {
   couple,
   date,
@@ -11,6 +12,7 @@ import {
   timeline,
   dressCode,
   traffic,
+  musicSrc,
   photos,
   mapsNavUrl,
   mapsEmbedUrl,
@@ -768,10 +770,14 @@ export default function App() {
   const { scrollYProgress } = useScroll();
   const [opened, setOpened] = useState(false);
   const handleOpen = useCallback(() => setOpened(true), []);
+  const music = useBackgroundMusic(musicSrc);
 
   return (
     <>
-      <AnimatePresence>{!opened && <EnvelopeIntro key="envelope" onOpen={handleOpen} />}</AnimatePresence>
+      <AnimatePresence>
+        {!opened && <EnvelopeIntro key="envelope" onOpen={handleOpen} onStart={music.start} />}
+      </AnimatePresence>
+      <MusicToggle visible={opened && music.available} playing={music.playing} onToggle={music.toggle} />
       <motion.div
         className="fixed inset-x-0 top-0 z-50 h-[2px] origin-left bg-earth/70"
         style={{ scaleX: scrollYProgress }}

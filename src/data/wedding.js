@@ -98,6 +98,9 @@ export const traffic = [
   },
 ];
 
+// 背景音樂：放到 public/music/canon.mp3，開啟信封時播放；檔案不存在時自動隱藏音樂按鈕
+export const musicSrc = 'music/canon.mp3';
+
 // 婚紗照：放到 public/photos/，依序命名 01.jpg、02.jpg …（最多 20 張，直式橫式皆可）
 // 沒有的檔名會自動略過，不需要修改這裡
 const MAX_PHOTOS = 20;
