@@ -16,27 +16,24 @@ export function useBackgroundMusic(src) {
   const [available, setAvailable] = useState(false);
   const [playing, setPlaying] = useState(false);
 
-  // 確認音檔存在（開發伺服器對不存在的路徑會回傳 index.html，所以檢查 content-type）
+  // 直接建立播放器：能讀到音訊資料就顯示按鈕，讀取失敗（檔案不存在／格式錯誤）才停用。
+  // 不依賴伺服器回應標頭，避免部署平台設定不同而誤判。
   useEffect(() => {
-    let alive = true;
-    fetch(src, { method: 'HEAD' })
-      .then((res) => {
-        const type = res.headers.get('content-type') || '';
-        if (alive && res.ok && type.startsWith('audio')) {
-          const audio = new Audio(src);
-          audio.loop = true;
-          audio.preload = 'auto';
-          audio.volume = 0;
-          audio.addEventListener('play', () => setPlaying(true));
-          audio.addEventListener('pause', () => setPlaying(false));
-          audioRef.current = audio;
-          setAvailable(true);
-        }
-      })
-      .catch(() => {});
+    const audio = new Audio();
+    audio.loop = true;
+    audio.preload = 'auto';
+    audio.addEventListener('loadedmetadata', () => setAvailable(true));
+    audio.addEventListener('error', () => {
+      setAvailable(false);
+      if (audioRef.current === audio) audioRef.current = null;
+    });
+    audio.addEventListener('play', () => setPlaying(true));
+    audio.addEventListener('pause', () => setPlaying(false));
+    audio.src = src;
+    audioRef.current = audio;
     return () => {
-      alive = false;
-      audioRef.current?.pause();
+      audio.pause();
+      audio.removeAttribute('src');
     };
   }, [src]);
 
