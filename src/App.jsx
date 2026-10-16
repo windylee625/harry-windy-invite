@@ -254,45 +254,74 @@ function Story() {
 
         <Reveal delay={0.1}>
           <blockquote className="mt-8 font-serif text-xl uppercase leading-relaxed tracking-[0.14em] sm:text-3xl sm:leading-relaxed">
-            Perhaps the most beautiful kind of love is the one that feels natural…
+            {/* 手機：The most beautiful / love feels natural；桌機：The most beautiful love / feels natural */}
+            The most beautiful <br className="sm:hidden" />
+            love <br className="hidden sm:block" />
+            feels natural
           </blockquote>
         </Reveal>
 
         <Reveal delay={0.2}>
-          <Divider className="my-10" />
+          <p className="mt-8 text-[15px] leading-[2.2] tracking-[0.2em] sm:text-lg">
+            在彼此身邊，是最舒服自然的陪伴。
+            <br />
+            誠摯邀請您，一同分享我們的喜悅。
+          </p>
         </Reveal>
 
         <Reveal delay={0.3}>
-          <p className="text-[15px] leading-[2.2] tracking-[0.2em] sm:text-lg sm:leading-[2.3]">
-            在彼此身邊，是最舒服自然的陪伴。
-            <br />
-            誠摯邀請最親愛的您，
-            <br className="sm:hidden" />
-            前來與我們一同分享這份喜悅與美好。
-          </p>
-        </Reveal>
-
-        <Reveal delay={0.4}>
-          <p className="mx-auto mt-10 max-w-md font-elegant text-sm italic leading-7 text-earth/75 sm:text-base">
-            Together with their families, request the honor of your presence at the celebration of their marriage,
-            Saturday, the Seventh of November, Two Thousand Twenty-Six.
-          </p>
-        </Reveal>
-
-        <Reveal delay={0.5} className="mt-14 grid grid-cols-2 gap-4 sm:gap-8">
-          {[
-            { role: '新郎 · GROOM', ...couple.groom },
-            { role: '新娘 · BRIDE', ...couple.bride },
-          ].map((p) => (
-            <div key={p.en} className="rounded-t-full border border-earth/25 bg-cream/60 px-4 pb-8 pt-12">
-              <p className="text-[11px] tracking-[0.3em] text-earth/60">{p.role}</p>
-              <p className="mt-4 font-serif text-2xl tracking-[0.2em] sm:text-3xl">{p.en}</p>
-              <p className="mt-2 tracking-[0.4em]">{p.zh}</p>
-            </div>
-          ))}
+          <CoupleNames />
         </Reveal>
       </div>
     </section>
+  );
+}
+
+// 新郎 & 新娘：仿實體喜帖的名牌排版，中間以大型斜體「&」串起兩人
+function CoupleNames() {
+  const people = [
+    { role: 'GROOM', roleZh: '新郎', ...couple.groom },
+    { role: 'BRIDE', roleZh: '新娘', ...couple.bride },
+  ];
+  return (
+    <div className="relative mx-auto mt-14 max-w-xl">
+      {/* 上下雙細線 */}
+      <div className="double-rule mx-auto w-full text-earth/30" />
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-8 sm:gap-6 sm:py-10">
+        {people.map((p, i) => (
+          <motion.div
+            key={p.en}
+            className={`flex flex-col items-center ${i === 1 ? 'col-start-3' : ''}`}
+            initial={{ opacity: 0, x: i === 0 ? -24 : 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.1, ease, delay: 0.3 }}
+          >
+            <span className="font-serif text-[10px] tracking-widest2 text-earth/55 sm:text-[11px]">
+              {p.roleZh} · {p.role}
+            </span>
+            <span className="mt-3 font-display text-3xl tracking-[0.18em] sm:text-4xl">{p.en}</span>
+            <span className="mt-2 text-sm tracking-[0.45em] sm:text-base">{p.zh}</span>
+          </motion.div>
+        ))}
+        <motion.span
+          className="col-start-2 row-start-1 font-elegant text-5xl italic leading-none text-earth/45 sm:text-6xl"
+          initial={{ opacity: 0, scale: 0.6, rotate: -12 }}
+          whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease, delay: 0.6 }}
+          aria-hidden="true"
+        >
+          &amp;
+        </motion.span>
+      </div>
+      <div className="double-rule mx-auto w-full text-earth/30" />
+      <div className="mt-6 flex items-center justify-center gap-3 font-serif text-[11px] tracking-widest2 text-earth/60">
+        <Blossom className="h-3 w-3" />
+        {date.display} · {date.weekdayEn}
+        <Blossom className="h-3 w-3" />
+      </div>
+    </div>
   );
 }
 
@@ -433,22 +462,32 @@ function Timeline() {
         whileInView="show"
         viewport={{ once: true, amount: 0.1 }}
       >
-        {/* 中線 */}
-        <motion.span
-          className="absolute left-[7px] top-2 h-[calc(100%-1rem)] w-px origin-top bg-beige/40 md:left-1/2"
-          variants={{ hidden: { scaleY: 0 }, show: { scaleY: 1, transition: { duration: 1.8, ease } } }}
-        />
-
         {timeline.map((item, i) => {
           const right = i % 2 === 1;
+          const last = i === timeline.length - 1;
           return (
             <li key={item.time} className="relative mb-14 last:mb-0 md:mb-4 md:grid md:grid-cols-2 md:gap-16">
-              {/* 節點 */}
+              {/*
+                連接線：從本節點圓心（top 16px）畫到下一個節點圓心，
+                高度 = 本項高度 + 項目間距（mb-14 / md:mb-4）。
+                位置用 left 計算置中，不用 translate（會被 Framer 的 transform 覆蓋）。
+              */}
+              {!last && (
+                <motion.span
+                  className="absolute left-[8px] top-4 h-[calc(100%+3.5rem)] w-px origin-top bg-beige/45 md:left-[calc(50%-0.5px)] md:h-[calc(100%+1rem)]"
+                  variants={{
+                    hidden: { scaleY: 0 },
+                    show: { scaleY: 1, transition: { duration: 0.6, ease: 'easeInOut', delay: 0.45 + i * 0.35 } },
+                  }}
+                />
+              )}
+
+              {/* 節點：17px 圓，圓心在 (8.5px, 16px)；桌機在 50% */}
               <motion.span
-                className="absolute left-0 top-2 flex h-[15px] w-[15px] items-center justify-center rounded-full border border-beige bg-earth md:left-1/2 md:-translate-x-1/2"
+                className="absolute left-0 top-[7.5px] z-10 flex h-[17px] w-[17px] items-center justify-center rounded-full border border-beige bg-earth md:left-[calc(50%-8.5px)]"
                 variants={{
                   hidden: { scale: 0 },
-                  show: { scale: 1, transition: { duration: 0.5, delay: 0.3 + i * 0.15 } },
+                  show: { scale: 1, transition: { duration: 0.45, delay: 0.3 + i * 0.35 } },
                 }}
               >
                 <span className="h-[5px] w-[5px] rounded-full bg-beige" />
@@ -456,7 +495,7 @@ function Timeline() {
 
               <Reveal
                 delay={0.2 + i * 0.12}
-                className={`pl-9 md:pl-0 ${right ? 'md:col-start-2' : 'md:col-start-1 md:text-right'}`}
+                className={`pl-10 md:pl-0 ${right ? 'md:col-start-2' : 'md:col-start-1 md:text-right'}`}
               >
                 <p className="font-elegant text-4xl tabular-nums tracking-wider sm:text-5xl">{item.time}</p>
                 <p className="mt-3 font-serif text-xs tracking-widest2 text-beige/70 sm:text-sm">{item.en}</p>
@@ -651,19 +690,63 @@ function Gallery() {
   );
 }
 
+// 一筆畫出的愛心：捲動到此處時描線，再淡淡填色並輕輕跳動
+const HEART =
+  'M50 84 C30 70 6 52 6 30 C6 16 16 6 29 6 C39 6 46 12 50 21 C54 12 61 6 71 6 C84 6 94 16 94 30 C94 52 70 70 50 84 Z';
+
+function DrawnHeart() {
+  return (
+    <motion.svg
+      viewBox="0 0 100 90"
+      className="mx-auto h-14 w-16 sm:h-16 sm:w-[72px]"
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.8 }}
+      aria-hidden="true"
+    >
+      <motion.g
+        style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+        variants={{
+          hidden: { scale: 1 },
+          show: { scale: [1, 1.12, 1, 1.08, 1], transition: { delay: 2.4, duration: 1.2, ease: 'easeInOut' } },
+        }}
+      >
+        <motion.path
+          d={HEART}
+          fill="#D8CCB6"
+          stroke="#583217"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          variants={{
+            hidden: { pathLength: 0, fillOpacity: 0 },
+            show: {
+              pathLength: 1,
+              fillOpacity: 0.9,
+              transition: { pathLength: { duration: 1.8, ease: 'easeInOut' }, fillOpacity: { delay: 1.6, duration: 0.8 } },
+            },
+          }}
+        />
+      </motion.g>
+    </motion.svg>
+  );
+}
+
 function Footer() {
   return (
     <footer className="bg-cream px-5 pb-14 pt-24 sm:pt-32">
       <Gallery />
 
-      <Reveal className="mx-auto max-w-xl text-center">
-        <p className="text-[15px] leading-[2.2] tracking-[0.2em] sm:text-base">
-          謝謝您一路以來的陪伴與祝福，
-          <br />
-          期待在這個秋日，與您相見。
-        </p>
-        <p className="mt-6 font-elegant italic text-earth/70">Thank you for being part of our story.</p>
-      </Reveal>
+      <div className="mx-auto max-w-xl text-center">
+        <DrawnHeart />
+        <Reveal delay={0.3}>
+          <p className="mt-8 text-[15px] leading-[2.2] tracking-[0.2em] sm:text-base">
+            謝謝您一路以來的陪伴與祝福，
+            <br />
+            期待 11 月 7 日與您相見
+          </p>
+        </Reveal>
+      </div>
 
       <Reveal className="mx-auto mt-16 w-64 max-w-full px-2 sm:w-80">
         <LogoHeader className="h-auto w-full" animate={false} />

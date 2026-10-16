@@ -40,7 +40,7 @@ export const timeline = [
     zh: '證婚入席',
     en: 'CEREMONY SEATING',
     place: '永恆教堂',
-    note: '歡迎提早到場！Candy Bar 與小活動已準備好等您',
+    note: '現場備有 Candy Bar，歡迎提早抵達，與老朋友們敘敘舊',
   },
   { time: '11:00', zh: '證婚儀式', en: 'CEREMONY', place: '永恆教堂' },
   {
@@ -94,7 +94,6 @@ export const traffic = [
     lines: [
       '高鐵桃園站：搭乘計程車約 35–40 分鐘。',
       '台鐵桃園站：搭乘計程車約 30–35 分鐘。',
-      '建議親友共乘，或提早叫車出發。',
     ],
   },
 ];
