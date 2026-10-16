@@ -72,7 +72,10 @@ export default function EnvelopeIntro({ onOpen, onStart }) {
         transition={{ duration: 0.9, ease, delay: opening ? 0 : 0.2 }}
       >
         <p className="font-serif text-[11px] tracking-widest3 text-beige/70 sm:text-xs">You&rsquo;re Invited</p>
-        <p className="mt-4 font-display text-3xl tracking-[0.25em] sm:text-4xl">HARRY &amp; WINDY</p>
+        <p className="mt-4 font-display text-3xl tracking-[0.25em] sm:text-4xl">
+          HARRY{' '}
+          <span className="mx-1 font-elegant text-[0.9em] italic tracking-normal text-beige/80">&amp;</span> WINDY
+        </p>
         <div className="mt-4 flex items-center justify-center gap-3 font-serif text-xs tracking-widest2 text-beige/80">
           <span className="h-px w-8 bg-beige/40" />
           2026 · 11 · 07
@@ -191,7 +194,9 @@ export default function EnvelopeIntro({ onOpen, onStart }) {
         >
           <span className="absolute inset-[5px] rounded-full border border-earth/40" />
           <span className="absolute inset-[8px] rounded-full border border-earth/20" />
-          <span className="font-display text-lg tracking-wider text-earth sm:text-xl">H&amp;W</span>
+          <span className="font-display text-lg tracking-wider text-earth sm:text-xl">
+            H<span className="mx-px font-elegant text-[0.85em] italic">&amp;</span>W
+          </span>
         </motion.div>
       </motion.button>
 
