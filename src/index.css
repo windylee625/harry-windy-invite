@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-cream font-sans text-earth antialiased;
+    overflow-x: hidden;
+  }
+  ::selection {
+    @apply bg-beige text-earth;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply font-serif text-[11px] uppercase tracking-widest3 text-earth/70 sm:text-xs;
+  }
+  .section-title {
+    @apply font-serif text-3xl uppercase leading-tight tracking-[0.12em] sm:text-4xl md:text-5xl;
+  }
+  /* 細雙線分隔 */
+  .double-rule {
+    @apply relative h-[5px] w-16 border-y border-current;
+  }
+}
+
+/* 柔和紙張紋理 */
+.paper-grain {
+  background-image: radial-gradient(rgba(88, 50, 23, 0.035) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
